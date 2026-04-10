@@ -1,0 +1,39 @@
+services:
+  waha:
+    image: devlikeapro/waha:latest
+    container_name: waha
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "10"
+    ports:
+      - "9060:3000"
+    volumes:
+      - type: volume
+        source: waha-sessions
+        target: /app/.sessions
+      - type: volume
+        source: waha-media
+        target: /app/.media
+    env_file:
+      - .env
+    networks:
+      - aee-apps-network
+
+  app:
+    build: .
+    ports:
+      - "8080:3000"
+    depends_on:
+      - waha
+    networks:
+      - aee-apps-network
+
+networks:
+  aee-apps-network:
+    external: true
+
+volumes:
+  waha-media:
+  waha-sessions:
